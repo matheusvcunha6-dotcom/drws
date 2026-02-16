@@ -6,12 +6,10 @@
     <title>Santa Ink - Tattoo & Piercing Premium</title>
     <meta name="description" content="Estúdio de Tatuagem e Piercing em Guarulhos. Especialistas em Fine Line, Realismo e Perfurações de Luxo." />
     
-    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
     
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
       tailwind.config = {
@@ -30,19 +28,16 @@
       }
     </script>
 
-    <!-- Scripts para rodar React no Navegador -->
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <script type="importmap">
-{
-  "imports": {
-    "react": "https://esm.sh/react@19.0.0",
-    "react-dom/client": "https://esm.sh/react-dom@19.0.0/client",
-    "lucide-react": "https://esm.sh/lucide-react@0.460.0",
-    "react-dom/": "https://esm.sh/react-dom@^19.2.4/",
-    "react/": "https://esm.sh/react@^19.2.4/"
-  }
-}
-</script>
+    {
+      "imports": {
+        "react": "https://esm.sh/react@19.0.0",
+        "react-dom/client": "https://esm.sh/react-dom@19.0.0/client",
+        "lucide-react": "https://esm.sh/lucide-react@0.460.0"
+      }
+    }
+    </script>
 
     <style>
       body {
@@ -76,13 +71,12 @@
         opacity: 1;
       }
     </style>
-<link rel="stylesheet" href="/index.css">
 </head>
 <body class="selection-white">
     <div id="root"></div>
 
     <script type="text/babel" data-type="module">
-      import React, { useState, useEffect } from 'react';
+      import React, { useState, useEffect, useRef } from 'react';
       import { createRoot } from 'react-dom/client';
       import { 
         Menu, X, ChevronDown, Instagram, MessageCircle, 
@@ -103,7 +97,7 @@
           id: 'jeferson',
           name: 'Jeferson',
           specialties: ['Realismo', 'Blackwork', 'Fechamentos'],
-          image: 'Bruno.jpeg',
+          image: 'Bruno.jpeg', 
           whatsapp: 'https://wa.me/551149623941',
           instagram: 'https://www.instagram.com/jefetattoo'
         }
@@ -138,17 +132,59 @@
       ];
 
       const GALLERY_IMAGES = [
-  'tatto01.jpg',
-  'tatto02.jfif',
-  'tatto03.jpg',
-  'tatto04.jfif',
-  'tatto05.jfif',
-  'tatto06.jfif',
-  'piercing01.jfif',
-  'piercing02.jfif',
+        'tatto01.jpg',
+        'tatto02.jfif',
+        'tatto03.jpg',
+        'tatto04.jfif',
+        'tatto05.jfif',
+        'tatto06.jfif',
+        'piercing01.jfif',
+        'piercing02.jfif',
       ];
 
       // --- COMPONENTES ---
+
+      // Componente Personalizado para Efeito de Revelação (Sombra vai e volta)
+      const RevealImage = ({ src, alt, className = "", onClick }) => {
+        const [isRevealed, setIsRevealed] = useState(false);
+        const imgRef = useRef(null);
+
+        useEffect(() => {
+          const observer = new IntersectionObserver(
+            ([entry]) => {
+              // Se a interseção for maior ou igual a 55%, isRevealed é true.
+              // Se for menor, isRevealed vira false automaticamente.
+              setIsRevealed(entry.isIntersecting);
+            },
+            { threshold: 0.55 } // Gatilho de 55% de visibilidade
+          );
+
+          if (imgRef.current) {
+            observer.observe(imgRef.current);
+          }
+
+          // Importante: NÃO desconectamos o observer aqui no callback, 
+          // apenas no return do useEffect (limpeza), para ele continuar monitorando.
+          return () => observer.disconnect();
+        }, []);
+
+        // Estados de estilo
+        const transitionStyles = "transition-all duration-1000 ease-in-out transform will-change-transform";
+        // Estado "Escuro": Sombra forte, preto e branco, levemente menor
+        const hiddenStyles = "filter grayscale brightness-50 scale-95 opacity-80"; 
+        // Estado "Revelado": Cores reais, brilho normal, tamanho normal
+        const visibleStyles = "filter grayscale-0 brightness-100 scale-100 opacity-100";
+
+        return (
+          <img
+            ref={imgRef}
+            src={src}
+            alt={alt}
+            onClick={onClick}
+            className={`${className} ${transitionStyles} ${isRevealed ? visibleStyles : hiddenStyles}`}
+          />
+        );
+      };
 
       const SectionTitle = ({ title, subtitle, centered = true }) => (
         <div className={`mb-16 ${centered ? 'text-center' : 'text-left'}`}>
@@ -185,7 +221,7 @@
               <div className="flex justify-between items-center">
                 <a href="#" className="group flex items-center justify-center">
                   <div className="w-12 h-12 rounded-full border-2 border-white flex items-center justify-center bg-transparent group-hover:bg-white transition-all duration-300 transform group-hover:scale-105">
-                    <img src="logo.png" />
+                    <img src="img/logo.png" alt="Logo Santa Ink" className="w-10 h-10 object-contain"/>
                   </div>
                 </a>
                 <div className="hidden md:block">
@@ -239,7 +275,11 @@
               {ARTISTS.map((artist) => (
                 <div key={artist.id} className="group relative">
                   <div className="aspect-[3/4] overflow-hidden bg-zinc-900 border border-zinc-800">
-                    <img src={artist.image} alt={artist.name} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 filter grayscale hover:grayscale-0" />
+                    <RevealImage 
+                      src={artist.image} 
+                      alt={artist.name} 
+                      className="w-full h-full object-cover" 
+                    />
                   </div>
                   <div className="mt-6 flex flex-col items-center">
                     <h3 className="font-display text-3xl font-bold text-white uppercase tracking-wide">{artist.name}</h3>
@@ -250,8 +290,14 @@
                     </div>
                     <div className="flex space-x-4">
                       <a href={artist.whatsapp} className="flex items-center px-6 py-2 bg-white text-black font-display text-sm font-bold uppercase tracking-wider hover:bg-zinc-200 transition-colors"><MessageCircle size={16} className="mr-2" />Orçar</a>
-                      <a href={artist.instagram} target="_blank"             // <-- ADICIONE
-    rel="noopener noreferrer" className="flex items-center px-6 py-2 border border-white text-white font-display text-sm font-bold uppercase tracking-wider hover:bg-white hover:text-black transition-all"><Instagram size={16} className="mr-2" />Instagram</a>
+                      <a 
+                        href={artist.instagram} 
+                        target="_blank" 
+                        rel="noopener noreferrer" 
+                        className="flex items-center px-6 py-2 border border-white text-white font-display text-sm font-bold uppercase tracking-wider hover:bg-white hover:text-black transition-all"
+                      >
+                        <Instagram size={16} className="mr-2" />Instagram
+                      </a>
                     </div>
                   </div>
                 </div>
@@ -280,7 +326,7 @@
                   </div>
                   <div className="flex flex-col sm:flex-row gap-4 pt-4 justify-center lg:justify-start">
                     <a href={PIERCER.whatsapp} className="flex items-center justify-center px-10 py-4 bg-white text-black font-display text-sm font-bold uppercase tracking-widest hover:bg-zinc-200 transition-all duration-300"><MessageCircle size={18} className="mr-2" />Solicitar Orçamento</a>
-                    <a href={PIERCER.instagram} className="flex items-center justify-center px-10 py-4 border border-zinc-800 text-white font-display text-sm font-bold uppercase tracking-widest hover:border-white transition-all"><Instagram size={18} className="mr-2" />Ver Joalheria</a>
+                    <a href={PIERCER.instagram} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center px-10 py-4 border border-zinc-800 text-white font-display text-sm font-bold uppercase tracking-widest hover:border-white transition-all"><Instagram size={18} className="mr-2" />Ver Joalheria</a>
                   </div>
                 </div>
               </div>
@@ -288,7 +334,11 @@
                 <div className="relative w-full max-w-lg mx-auto">
                   <div className="absolute -inset-4 border border-zinc-900 rounded-sm"></div>
                   <div className="relative aspect-square md:aspect-[3/4] overflow-hidden bg-zinc-900 border border-zinc-800 z-10 shadow-2xl">
-                    <img src={PIERCER.image} alt="Piercing" className="w-full h-full object-cover object-center filter grayscale contrast-110 hover:grayscale-0 transition-all duration-1000 transform hover:scale-105" />
+                    <RevealImage 
+                      src={PIERCER.image} 
+                      alt="Piercing" 
+                      className="w-full h-full object-cover object-center" 
+                    />
                   </div>
                   <div className="absolute -bottom-4 -right-4 bg-white text-black p-5 z-20 flex flex-col items-center shadow-xl border border-black min-w-[100px]">
                     <ShieldCheck size={28} className="mb-1" />
@@ -301,8 +351,7 @@
         </section>
       );
 
-const Gallery = () => {
-
+      const Gallery = () => {
         const [selectedImage, setSelectedImage] = useState(null);
 
         return (
@@ -310,7 +359,6 @@ const Gallery = () => {
             <div className="max-w-7xl mx-auto">
               <SectionTitle title="Galeria" subtitle="divider" />
               
-              {/* Grid de Imagens */}
               <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-4">
                 {GALLERY_IMAGES.map((img, i) => (
                   <div 
@@ -318,12 +366,13 @@ const Gallery = () => {
                     className="aspect-square relative group overflow-hidden bg-zinc-900 cursor-pointer"
                     onClick={() => setSelectedImage(img)} 
                   >
-                    <img 
+                    <RevealImage 
                       src={img} 
                       alt={`Work ${i + 1}`} 
-                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110 filter grayscale group-hover:grayscale-0" 
+                      className="w-full h-full object-cover"
                     />
-                    <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                    
+                    <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center z-10">
                       <span className="font-display text-white text-sm uppercase tracking-widest border border-white px-3 py-1">
                         Ver
                       </span>
@@ -333,13 +382,11 @@ const Gallery = () => {
               </div>
             </div>
 
-            {/* Modal / Lightbox (Abre quando selectedImage tem valor) */}
             {selectedImage && (
               <div 
                 className="fixed inset-0 z-50 flex items-center justify-center bg-black/95 p-4 backdrop-blur-sm"
                 onClick={() => setSelectedImage(null)}
               >
-                {/* Botão Fechar */}
                 <button 
                   onClick={() => setSelectedImage(null)}
                   className="absolute top-6 right-6 text-zinc-400 hover:text-white transition-colors"
@@ -347,12 +394,11 @@ const Gallery = () => {
                   <X size={40} />
                 </button>
 
-                {/* Imagem Expandida */}
                 <img 
                   src={selectedImage} 
                   alt="Full size" 
                   className="max-w-full max-h-[90vh] object-contain shadow-2xl drop-shadow-2xl rounded-sm"
-                  onClick={(e) => e.stopPropagation()} // Evita fechar se clicar na imagem
+                  onClick={(e) => e.stopPropagation()} 
                 />
               </div>
             )}
@@ -380,7 +426,7 @@ const Gallery = () => {
           <div className="max-w-4xl mx-auto">
             <div className="text-center mb-16"><h4 className="font-display text-zinc-600 tracking-[0.6em] uppercase text-xs mb-4">Central de Ajuda</h4><SectionTitle title="Dúvidas Frequentes" centered /></div>
             <div className="space-y-6">{FAQS.map((f, i) => <FAQItem key={i} {...f} />)}</div>
-            <div className="mt-20 text-center"><p className="text-zinc-600 text-sm font-sans mb-4">Ainda tem alguma pergunta?</p><a href="https://wa.me/5511980519891" className="text-white border-b border-zinc-800 hover:border-white transition-all pb-1 font-display uppercase tracking-widest text-sm">Fale conosco via WhatsApp</a></div>
+            <div className="mt-20 text-center"><p className="text-zinc-600 text-sm font-sans mb-4">Ainda tem alguma pergunta?</p><a href="https://wa.me/551149623941" className="text-white border-b border-zinc-800 hover:border-white transition-all pb-1 font-display uppercase tracking-widest text-sm">Fale conosco via WhatsApp</a></div>
           </div>
         </section>
       );
@@ -392,7 +438,7 @@ const Gallery = () => {
               <div className="flex flex-col items-center md:items-start text-center md:text-left">
                 <a href="#" className="group inline-flex flex-col items-center md:items-start mb-6">
                   <div className="w-16 h-16 rounded-full border-2 border-white flex items-center justify-center bg-transparent group-hover:bg-white transition-all duration-300 transform group-hover:scale-105 mb-4">
-                     <img src="logo.png" />
+                     <img src="logo.png" alt="Logo" className="w-10 h-10 object-contain"/>
                   </div>
                   <span className="font-display font-bold text-lg tracking-[0.3em] text-white uppercase">Santa Ink</span>
                 </a>
@@ -420,7 +466,7 @@ const Gallery = () => {
               </div>
             </div>
             <div className="border-t border-zinc-900 pt-8 flex flex-col md:flex-row justify-between items-center text-[10px] text-zinc-600 font-sans uppercase tracking-[0.3em]">
-              <p>© 2024 Santa Ink Studio. Todos os direitos reservados.</p>
+              <p>© {new Date().getFullYear()} Santa Ink Studio. Todos os direitos reservados.</p>
             </div>
           </div>
         </footer>
@@ -443,6 +489,5 @@ const Gallery = () => {
       const root = createRoot(document.getElementById('root'));
       root.render(<App />);
     </script>
-<script type="module" src="/index.tsx"></script>
 </body>
 </html>
