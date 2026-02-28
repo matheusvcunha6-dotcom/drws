@@ -9,8 +9,8 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="icon" type="image/webp" href="logo.webp">
-    <link rel="preload" as="image" href="/tatto02.webp">
-  <link rel="apple-touch-icon" href="logo.webp">
+    <link rel="preload" as="image" href="Estudio.webp" fetchpriority="high">
+    <link rel="apple-touch-icon" href="logo.webp">
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
     
     <script src="https://cdn.tailwindcss.com"></script>
@@ -135,19 +135,12 @@
       ];
 
       const GALLERY_IMAGES = [
-        'tatto01.webp',
-        'tatto02.webp',
-        'tatto03.webp',
-        'tatto04.webp',
-        'tatto05.webp',
-        'tatto06.webp',
-        'piercing01.webp',
-        'piercing02.webp',
+        'tatto01.webp', 'tatto02.webp', 'tatto03.webp', 'tatto04.webp',
+        'tatto05.webp', 'tatto06.webp', 'piercing01.webp', 'piercing02.webp',
       ];
 
       // --- COMPONENTES ---
 
-      // Componente Personalizado para Efeito de Revelação (Sombra vai e volta)
       const RevealImage = ({ src, alt, className = "", onClick }) => {
         const [isRevealed, setIsRevealed] = useState(false);
         const imgRef = useRef(null);
@@ -155,27 +148,20 @@
         useEffect(() => {
           const observer = new IntersectionObserver(
             ([entry]) => {
-              // Se a interseção for maior ou igual a 55%, isRevealed é true.
-              // Se for menor, isRevealed vira false automaticamente.
               setIsRevealed(entry.isIntersecting);
             },
-            { threshold: 0.55 } // Gatilho de 55% de visibilidade
+            { threshold: 0.55 }
           );
 
           if (imgRef.current) {
             observer.observe(imgRef.current);
           }
 
-          // Importante: NÃO desconectamos o observer aqui no callback, 
-          // apenas no return do useEffect (limpeza), para ele continuar monitorando.
           return () => observer.disconnect();
         }, []);
 
-        // Estados de estilo
         const transitionStyles = "transition-all duration-1000 ease-in-out transform will-change-transform";
-        // Estado "Escuro": Sombra forte, preto e branco, levemente menor
         const hiddenStyles = "filter grayscale brightness-50 scale-95 opacity-80"; 
-        // Estado "Revelado": Cores reais, brilho normal, tamanho normal
         const visibleStyles = "filter grayscale-0 brightness-100 scale-100 opacity-100";
 
         return (
@@ -183,6 +169,7 @@
             ref={imgRef}
             src={src}
             alt={alt}
+            loading="lazy" // ATUALIZADO: Lazy loading para as imagens abaixo da dobra
             onClick={onClick}
             className={`${className} ${transitionStyles} ${isRevealed ? visibleStyles : hiddenStyles}`}
           />
@@ -222,7 +209,7 @@
           <nav className={`fixed w-full z-50 transition-all duration-500 ${scrolled ? 'bg-black/95 backdrop-blur-md border-b border-zinc-900 py-3' : 'bg-transparent py-6'}`}>
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
               <div className="flex justify-between items-center">
-                <a href="#" className="group flex items-center justify-center">
+                <a aria-label="Voltar para o topo" href="#" className="group flex items-center justify-center">
                   <div className="w-12 h-12 rounded-full border-2 border-white flex items-center justify-center bg-transparent group-hover:bg-white transition-all duration-300 transform group-hover:scale-105">
                     <img src="logo.webp" alt="Logo Santa Ink" className="w-10 h-10 object-contain"/>
                   </div>
@@ -235,14 +222,15 @@
                   </div>
                 </div>
                 <div className="md:hidden">
-                  <button onClick={() => setIsOpen(!isOpen)} className="text-gray-300 hover:text-white p-2">
+                  {/* ATUALIZADO: aria-label adicionado */}
+                  <button aria-label={isOpen ? "Fechar menu" : "Abrir menu"} onClick={() => setIsOpen(!isOpen)} className="text-gray-300 hover:text-white p-2">
                     {isOpen ? <X size={24} /> : <Menu size={24} />}
                   </button>
                 </div>
               </div>
             </div>
             <div className={`md:hidden fixed inset-0 bg-black z-40 flex flex-col items-center justify-center transition-all duration-500 ${isOpen ? 'opacity-100 visible' : 'opacity-0 invisible pointer-events-none'}`}>
-              <button onClick={() => setIsOpen(false)} className="absolute top-6 right-6 text-white"><X size={32} /></button>
+              <button aria-label="Fechar menu" onClick={() => setIsOpen(false)} className="absolute top-6 right-6 text-white"><X size={32} /></button>
               <div className="space-y-8 text-center">
                 {navLinks.map((link) => (
                   <a key={link.name} href={link.href} onClick={() => setIsOpen(false)} className="font-display text-3xl text-zinc-400 hover:text-white block uppercase tracking-[0.2em] transition-all">{link.name}</a>
@@ -256,7 +244,8 @@
       const Hero = () => (
         <div className="relative h-screen w-full overflow-hidden flex items-center justify-center bg-black">
           <div className="absolute inset-0 z-0">
-            <img src="Estudio.webp" alt="Background" className="w-full h-full object-cover opacity-40" />
+            {/* ATUALIZADO: fetchpriority adicionado para forçar o carregamento rápido do LCP */}
+            <img fetchpriority="high" src="Estudio.webp" alt="Background do Estúdio" className="w-full h-full object-cover opacity-40" />
             <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/40 to-black"></div>
           </div>
           <div className="relative z-10 text-center px-4 max-w-4xl mx-auto">
@@ -266,7 +255,7 @@
               <a href="#artistas" className="group relative inline-flex items-center justify-center px-8 py-4 text-sm font-bold text-white transition-all duration-200 bg-transparent border border-white font-display tracking-widest uppercase hover:bg-white hover:text-black">Conhecer Artistas</a>
             </div>
           </div>
-          <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce text-white/50"><ChevronDown size={32} /></div>
+          <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce text-white/50"><ChevronDown size={32} aria-hidden="true" /></div>
         </div>
       );
 
@@ -280,7 +269,7 @@
                   <div className="aspect-[3/4] overflow-hidden bg-zinc-900 border border-zinc-800">
                     <RevealImage 
                       src={artist.image} 
-                      alt={artist.name} 
+                      alt={`Tatuador ${artist.name}`} 
                       className="w-full h-full object-cover" 
                     />
                   </div>
@@ -292,14 +281,16 @@
                       ))}
                     </div>
                     <div className="flex space-x-4">
-                      <a href={artist.whatsapp} className="flex items-center px-6 py-2 bg-white text-black font-display text-sm font-bold uppercase tracking-wider hover:bg-zinc-200 transition-colors"><MessageCircle size={16} className="mr-2" />Orçar</a>
+                      {/* ATUALIZADO: aria-label adicionados */}
+                      <a aria-label={`Solicitar orçamento com ${artist.name} via WhatsApp`} href={artist.whatsapp} className="flex items-center px-6 py-2 bg-white text-black font-display text-sm font-bold uppercase tracking-wider hover:bg-zinc-200 transition-colors"><MessageCircle size={16} className="mr-2" aria-hidden="true" />Orçar</a>
                       <a 
+                        aria-label={`Acessar Instagram do tatuador ${artist.name}`}
                         href={artist.instagram} 
                         target="_blank" 
                         rel="noopener noreferrer" 
                         className="flex items-center px-6 py-2 border border-white text-white font-display text-sm font-bold uppercase tracking-wider hover:bg-white hover:text-black transition-all"
                       >
-                        <Instagram size={16} className="mr-2" />Instagram
+                        <Instagram size={16} className="mr-2" aria-hidden="true" />Instagram
                       </a>
                     </div>
                   </div>
@@ -328,8 +319,8 @@
                     ))}
                   </div>
                   <div className="flex flex-col sm:flex-row gap-4 pt-4 justify-center lg:justify-start">
-                    <a href={PIERCER.whatsapp} className="flex items-center justify-center px-10 py-4 bg-white text-black font-display text-sm font-bold uppercase tracking-widest hover:bg-zinc-200 transition-all duration-300"><MessageCircle size={18} className="mr-2" />Solicitar Orçamento</a>
-                    <a href={PIERCER.instagram} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center px-10 py-4 border border-zinc-800 text-white font-display text-sm font-bold uppercase tracking-widest hover:border-white transition-all"><Instagram size={18} className="mr-2" />Ver Joalheria</a>
+                    <a aria-label={`Solicitar orçamento de piercing com ${PIERCER.name} via WhatsApp`} href={PIERCER.whatsapp} className="flex items-center justify-center px-10 py-4 bg-white text-black font-display text-sm font-bold uppercase tracking-widest hover:bg-zinc-200 transition-all duration-300"><MessageCircle size={18} className="mr-2" aria-hidden="true" />Solicitar Orçamento</a>
+                    <a aria-label={`Ver joalheria no Instagram do ${PIERCER.name}`} href={PIERCER.instagram} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center px-10 py-4 border border-zinc-800 text-white font-display text-sm font-bold uppercase tracking-widest hover:border-white transition-all"><Instagram size={18} className="mr-2" aria-hidden="true" />Ver Joalheria</a>
                   </div>
                 </div>
               </div>
@@ -339,12 +330,12 @@
                   <div className="relative aspect-square md:aspect-[3/4] overflow-hidden bg-zinc-900 border border-zinc-800 z-10 shadow-2xl">
                     <RevealImage 
                       src={PIERCER.image} 
-                      alt="Piercing" 
+                      alt="Profissional de Piercing" 
                       className="w-full h-full object-cover object-center" 
                     />
                   </div>
                   <div className="absolute -bottom-4 -right-4 bg-white text-black p-5 z-20 flex flex-col items-center shadow-xl border border-black min-w-[100px]">
-                    <ShieldCheck size={28} className="mb-1" />
+                    <ShieldCheck size={28} className="mb-1" aria-hidden="true" />
                     <span className="font-display font-bold text-[9px] uppercase tracking-tighter leading-none text-center">Protocolo<br/>Hospitalar</span>
                   </div>
                 </div>
@@ -364,14 +355,15 @@
               
               <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-4">
                 {GALLERY_IMAGES.map((img, i) => (
-                  <div 
-                    key={i} 
-                    className="aspect-square relative group overflow-hidden bg-zinc-900 cursor-pointer"
+                  <button 
+                    key={i}
+                    aria-label={`Ampliar imagem da galeria ${i + 1}`}
+                    className="aspect-square relative group overflow-hidden bg-zinc-900 cursor-pointer w-full focus:outline-none"
                     onClick={() => setSelectedImage(img)} 
                   >
                     <RevealImage 
                       src={img} 
-                      alt={`Work ${i + 1}`} 
+                      alt={`Trabalho do estúdio ${i + 1}`} 
                       className="w-full h-full object-cover"
                     />
                     
@@ -380,7 +372,7 @@
                         Ver
                       </span>
                     </div>
-                  </div>
+                  </button>
                 ))}
               </div>
             </div>
@@ -391,15 +383,16 @@
                 onClick={() => setSelectedImage(null)}
               >
                 <button 
+                  aria-label="Fechar visualização da imagem"
                   onClick={() => setSelectedImage(null)}
-                  className="absolute top-6 right-6 text-zinc-400 hover:text-white transition-colors"
+                  className="absolute top-6 right-6 text-zinc-400 hover:text-white transition-colors focus:outline-none"
                 >
-                  <X size={40} />
+                  <X size={40} aria-hidden="true" />
                 </button>
 
                 <img 
                   src={selectedImage} 
-                  alt="Full size" 
+                  alt="Imagem ampliada" 
                   className="max-w-full max-h-[90vh] object-contain shadow-2xl drop-shadow-2xl rounded-sm"
                   onClick={(e) => e.stopPropagation()} 
                 />
@@ -413,9 +406,9 @@
         const [isOpen, setIsOpen] = useState(false);
         return (
           <div className="border border-zinc-900 bg-zinc-950/50 hover:bg-zinc-900 transition-all duration-500 overflow-hidden">
-            <button onClick={() => setIsOpen(!isOpen)} className="w-full p-6 flex justify-between items-center text-left focus:outline-none group">
+            <button aria-expanded={isOpen} aria-label={isOpen ? "Recolher resposta" : "Expandir resposta"} onClick={() => setIsOpen(!isOpen)} className="w-full p-6 flex justify-between items-center text-left focus:outline-none group">
               <h3 className={`font-display text-lg md:text-xl font-medium uppercase tracking-widest transition-colors duration-300 ${isOpen ? 'text-white' : 'text-zinc-500 group-hover:text-zinc-300'}`}>{question}</h3>
-              <div className={`p-1 rounded-full border border-zinc-800 transition-all duration-500 ${isOpen ? 'bg-white border-white rotate-180' : ''}`}><ChevronDown className={`transition-colors duration-300 ${isOpen ? 'text-black' : 'text-zinc-600'}`} size={18} /></div>
+              <div className={`p-1 rounded-full border border-zinc-800 transition-all duration-500 ${isOpen ? 'bg-white border-white rotate-180' : ''}`}><ChevronDown className={`transition-colors duration-300 ${isOpen ? 'text-black' : 'text-zinc-600'}`} size={18} aria-hidden="true" /></div>
             </button>
             <div className={`faq-grid ${isOpen ? 'open' : ''}`}>
               <div className="overflow-hidden"><div className="px-6 pb-8"><div className="h-px w-full bg-zinc-800 mb-6"></div><p className="font-sans text-zinc-400 font-light leading-relaxed text-lg">{answer}</p></div></div>
@@ -429,7 +422,7 @@
           <div className="max-w-4xl mx-auto">
             <div className="text-center mb-16"><h4 className="font-display text-zinc-600 tracking-[0.6em] uppercase text-xs mb-4">Central de Ajuda</h4><SectionTitle title="Dúvidas Frequentes" centered /></div>
             <div className="space-y-6">{FAQS.map((f, i) => <FAQItem key={i} {...f} />)}</div>
-            <div className="mt-20 text-center"><p className="text-zinc-600 text-sm font-sans mb-4">Ainda tem alguma pergunta?</p><a href="https://wa.me/5511980519891" className="text-white border-b border-zinc-800 hover:border-white transition-all pb-1 font-display uppercase tracking-widest text-sm">Fale conosco via WhatsApp</a></div>
+            <div className="mt-20 text-center"><p className="text-zinc-600 text-sm font-sans mb-4">Ainda tem alguma pergunta?</p><a aria-label="Fale conosco via WhatsApp para tirar dúvidas" href="https://wa.me/5511980519891" className="text-white border-b border-zinc-800 hover:border-white transition-all pb-1 font-display uppercase tracking-widest text-sm">Fale conosco via WhatsApp</a></div>
           </div>
         </section>
       );
@@ -439,55 +432,41 @@
           <div className="max-w-7xl mx-auto">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-16">
               <div className="flex flex-col items-center md:items-start text-center md:text-left">
-                <a href="#" className="group inline-flex flex-col items-center md:items-start mb-6">
+                <a aria-label="Voltar para o topo" href="#" className="group inline-flex flex-col items-center md:items-start mb-6">
                   <div className="w-16 h-16 rounded-full border-2 border-white flex items-center justify-center bg-transparent group-hover:bg-white transition-all duration-300 transform group-hover:scale-105 mb-4">
-                     <img src="logo.webp" alt="Logo" className="w-full h-full object-cover rounded-full"/>
+                     <img src="logo.webp" alt="Logo Santa Ink Footer" loading="lazy" className="w-full h-full object-cover rounded-full"/>
                   </div>
                   <span className="font-display font-bold text-lg tracking-[0.3em] text-white uppercase">Santa Ink</span>
                 </a>
                 <p className="text-zinc-500 font-sans text-sm max-w-xs">Estúdio profissional focado em arte, higiene e exclusividade em Guarulhos.</p>
                 <div className="flex space-x-4 mt-8">
-<a href="https://www.instagram.com/tattooariasantaink/" target="_blank" rel="noopener noreferrer" className="p-2 border border-zinc-800 text-white hover:bg-white hover:text-black"><Instagram size={20} /></a>
-  <a href="https://www.facebook.com/tattooariasantaink/?locale=pt_BR" target="_blank" rel="noopener noreferrer" className="p-2 border border-zinc-800 text-white hover:bg-white hover:text-black"><Facebook size={20} /></a>
-  <a href="https://wa.me/5511980519891" target="_blank" rel="noopener noreferrer" className="p-2 border border-zinc-800 text-white hover:bg-white hover:text-black flex items-center justify-center">
-    <svg 
-      xmlns="http://www.w3.org/2000/svg" 
-      width="20" height="20" 
-      viewBox="0 0 24 24" 
-      fill="currentColor"
-    >
-      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 0 0-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/>
-    </svg>
-  </a>
+                  <a aria-label="Visitar página do Instagram" href="https://www.instagram.com/tattooariasantaink/" target="_blank" rel="noopener noreferrer" className="p-2 border border-zinc-800 text-white hover:bg-white hover:text-black"><Instagram size={20} aria-hidden="true" /></a>
+                  <a aria-label="Visitar página do Facebook" href="https://www.facebook.com/tattooariasantaink/?locale=pt_BR" target="_blank" rel="noopener noreferrer" className="p-2 border border-zinc-800 text-white hover:bg-white hover:text-black"><Facebook size={20} aria-hidden="true" /></a>
+                  <a aria-label="Enviar mensagem no WhatsApp do estúdio" href="https://wa.me/5511980519891" target="_blank" rel="noopener noreferrer" className="p-2 border border-zinc-800 text-white hover:bg-white hover:text-black flex items-center justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 0 0-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/>
+                    </svg>
+                  </a>
                 </div>
               </div>
               <div className="flex flex-col items-center md:items-start text-center md:text-left">
                 <h4 className="font-display text-lg font-bold text-white uppercase tracking-wider mb-8">Localização & Contato</h4>
-       <div className="flex flex-col gap-2">
-<a 
-  href="https://maps.google.com/?cid=7530372581370335171&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQ" 
-  target="_blank" 
-  rel="noopener noreferrer" 
-  className="block mb-2 text-white hover:text-zinc-400 transition-colors"
->
-  R. Jorge Street, 96 - Jardim Gumercindo, Guarulhos - SP
-</a>
-                      <a 
-  href="tel:+551149623941" 
-  className="block text-white hover:text-zinc-400 transition-colors"
->
-  (11) 4962-3941
-</a>
-
+                <div className="flex flex-col gap-2">
+                  <a aria-label="Abrir endereço no Google Maps" href="https://maps.google.com/?cid=7530372581370335171&g_mp=Cidnb29nbGUubWFwcy5wbGFjZXMudjEuUGxhY2VzLlNlYXJjaFRleHQ" target="_blank" rel="noopener noreferrer" className="block mb-2 text-white hover:text-zinc-400 transition-colors">
+                    R. Jorge Street, 96 - Jardim Gumercindo, Guarulhos - SP
+                  </a>
+                  <a aria-label="Ligar para o estúdio" href="tel:+551149623941" className="block text-white hover:text-zinc-400 transition-colors">
+                    (11) 4962-3941
+                  </a>
                 </div>
               </div>
               <div className="flex flex-col items-center md:items-start text-center md:text-left">
                 <h4 className="font-display text-lg font-bold text-white uppercase tracking-wider mb-8">Horário</h4>
-                <div className="flex items-start"><Clock size={20} className="text-white mr-4 mt-1" />
+                <div className="flex items-start"><Clock size={20} className="text-white mr-4 mt-1" aria-hidden="true" />
                   <ul className="text-zinc-400 text-sm space-y-3">
                     <li className="flex justify-between w-52 border-b border-zinc-900 pb-2"><span>Seg - Sex:</span><span className="text-white">10h às 20h</span></li>
                     <li className="flex justify-between w-52 border-b border-zinc-900 pb-2"><span>Sáb:</span><span className="text-white">10h às 18h</span></li>
-                      <li className="flex justify-between w-52 border-b border-zinc-900 pb-2"><span>Dom:</span><span className="text-white">Fechado</span></li>
+                    <li className="flex justify-between w-52 border-b border-zinc-900 pb-2"><span>Dom:</span><span className="text-white">Fechado</span></li>
                   </ul>
                 </div>
               </div>
@@ -499,19 +478,34 @@
         </footer>
       );
 
-      const App = () => (
-        <div className="min-h-screen bg-black text-white">
-          <Navbar />
-          <main>
-            <Hero />
-            <Artists />
-            <Piercing />
-            <Gallery />
-            <FAQ />
-          </main>
-          <Footer />
-        </div>
-      );
+      const App = () => {
+        // ATUALIZADO: Simulação de Code-Spliting. 
+        // Renderiza apenas o Hero inicial para destravar o celular rápido.
+        const [isMounted, setIsMounted] = useState(false);
+
+        useEffect(() => {
+          setIsMounted(true);
+        }, []);
+
+        return (
+          <div className="min-h-screen bg-black text-white">
+            <Navbar />
+            <main>
+              <Hero />
+              {/* O restante do site só é injetado no DOM após o Hero já estar pintado na tela */}
+              {isMounted && (
+                <>
+                  <Artists />
+                  <Piercing />
+                  <Gallery />
+                  <FAQ />
+                </>
+              )}
+            </main>
+            {isMounted && <Footer />}
+          </div>
+        );
+      };
 
       const root = createRoot(document.getElementById('root'));
       root.render(<App />);
