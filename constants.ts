@@ -5,7 +5,7 @@ export const ARTISTS: Artist[] = [
     id: 'bruno',
     name: 'Bruno',
     specialties: ['Traços Finos', 'Minimalismo', 'Escritas'],
-    image: '/img/bruno.jpeg', 
+    image: '/img/bruno.webp', 
     whatsapp: 'https://wa.me/5511000000000',
     instagram: 'https://www.instagram.com/brunotattoosp'
   },
@@ -13,7 +13,7 @@ export const ARTISTS: Artist[] = [
     id: 'jeferson',
     name: 'Jeferson',
     specialties: ['Realismo', 'Blackwork', 'Fechamentos'],
-    image: '/img/bruno.jpeg',
+    image: '/img/bruno.webp',
     whatsapp: 'https://wa.me/5511000000000',
     instagram: 'https://www.instagram.com/jefetattoo'
   }
@@ -48,12 +48,12 @@ export const FAQS: FAQItem[] = [
 ];
 
 export const GALLERY_IMAGES = [
-'/img/tatto01.jpg',      // Note a barra no início
-  '/img/tatto02.jfif',
-  '/img/tatto03.jpg',
-  '/img/tatto04.jfif',
-  '/img/tatto05.jfif',
-  '/img/tatto06.jfif',
-  '/img/piercing01.jfif',
-  '/img/piercing02.jfif',
+'/img/tatto01.webp',      // Note a barra no início
+  '/img/tatto02.webp',
+  '/img/tatto03.webp',
+  '/img/tatto04.webp',
+  '/img/tatto05.webp',
+  '/img/tatto06.webp',
+  '/img/piercing01.webp',
+  '/img/piercing02.webp',
 ];
